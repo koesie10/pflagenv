@@ -83,55 +83,55 @@ func setup(fset *pflag.FlagSet, c interface{}, baseEnv, baseFlag string) error {
 
 		p := v.Addr()
 
-		switch f.Type.Kind() {
-		case reflect.String:
-			fset.StringVarP(p.Interface().(*string), flag, shorthand, v.String(), desc)
-		case reflect.Int:
-			fset.IntVarP(p.Interface().(*int), flag, shorthand, int(v.Int()), desc)
-		case reflect.Int8:
-			fset.Int8VarP(p.Interface().(*int8), flag, shorthand, int8(v.Int()), desc)
-		case reflect.Int16:
-			fset.Int16VarP(p.Interface().(*int16), flag, shorthand, int16(v.Int()), desc)
-		case reflect.Int32:
-			fset.Int32VarP(p.Interface().(*int32), flag, shorthand, int32(v.Int()), desc)
-		case reflect.Int64:
-			if f.Type == reflect.TypeOf(time.Duration(0)) {
-				fset.DurationVarP(p.Interface().(*time.Duration), flag, shorthand, v.Interface().(time.Duration), desc)
-				break
-			}
-
-			fset.Int64VarP(p.Interface().(*int64), flag, shorthand, v.Int(), desc)
-		case reflect.Uint:
-			fset.UintVarP(p.Interface().(*uint), flag, shorthand, uint(v.Uint()), desc)
-		case reflect.Uint8:
-			fset.Uint8VarP(p.Interface().(*uint8), flag, shorthand, uint8(v.Int()), desc)
-		case reflect.Uint16:
-			fset.Uint16VarP(p.Interface().(*uint16), flag, shorthand, uint16(v.Int()), desc)
-		case reflect.Uint32:
-			fset.Uint32VarP(p.Interface().(*uint32), flag, shorthand, uint32(v.Int()), desc)
-		case reflect.Uint64:
-			fset.Uint64VarP(p.Interface().(*uint64), flag, shorthand, v.Uint(), desc)
-		case reflect.Float64:
-			fset.Float64VarP(p.Interface().(*float64), flag, shorthand, v.Float(), desc)
-		case reflect.Bool:
-			fset.BoolVarP(p.Interface().(*bool), flag, shorthand, v.Bool(), desc)
-		case reflect.Slice:
-			switch f.Type.Elem().Kind() {
+		if p.Type().Implements(valueType) {
+			fset.VarP(p.Interface().(pflag.Value), flag, shorthand, desc)
+		} else {
+			switch f.Type.Kind() {
 			case reflect.String:
-				fset.StringSliceVarP(p.Interface().(*[]string), flag, shorthand, v.Interface().([]string), desc)
-			}
-		case reflect.Map:
-			if f.Type.Key().Kind() == reflect.String {
+				fset.StringVarP(p.Interface().(*string), flag, shorthand, v.String(), desc)
+			case reflect.Int:
+				fset.IntVarP(p.Interface().(*int), flag, shorthand, int(v.Int()), desc)
+			case reflect.Int8:
+				fset.Int8VarP(p.Interface().(*int8), flag, shorthand, int8(v.Int()), desc)
+			case reflect.Int16:
+				fset.Int16VarP(p.Interface().(*int16), flag, shorthand, int16(v.Int()), desc)
+			case reflect.Int32:
+				fset.Int32VarP(p.Interface().(*int32), flag, shorthand, int32(v.Int()), desc)
+			case reflect.Int64:
+				if f.Type == reflect.TypeOf(time.Duration(0)) {
+					fset.DurationVarP(p.Interface().(*time.Duration), flag, shorthand, v.Interface().(time.Duration), desc)
+					break
+				}
+
+				fset.Int64VarP(p.Interface().(*int64), flag, shorthand, v.Int(), desc)
+			case reflect.Uint:
+				fset.UintVarP(p.Interface().(*uint), flag, shorthand, uint(v.Uint()), desc)
+			case reflect.Uint8:
+				fset.Uint8VarP(p.Interface().(*uint8), flag, shorthand, uint8(v.Int()), desc)
+			case reflect.Uint16:
+				fset.Uint16VarP(p.Interface().(*uint16), flag, shorthand, uint16(v.Int()), desc)
+			case reflect.Uint32:
+				fset.Uint32VarP(p.Interface().(*uint32), flag, shorthand, uint32(v.Int()), desc)
+			case reflect.Uint64:
+				fset.Uint64VarP(p.Interface().(*uint64), flag, shorthand, v.Uint(), desc)
+			case reflect.Float64:
+				fset.Float64VarP(p.Interface().(*float64), flag, shorthand, v.Float(), desc)
+			case reflect.Bool:
+				fset.BoolVarP(p.Interface().(*bool), flag, shorthand, v.Bool(), desc)
+			case reflect.Slice:
 				switch f.Type.Elem().Kind() {
 				case reflect.String:
-					fset.VarP(newStringMap(v.Interface().(map[string]string), p.Interface().(*map[string]string)), flag, shorthand, desc)
-				case reflect.Int64:
-					fset.VarP(newInt64Map(v.Interface().(map[string]int64), p.Interface().(*map[string]int64)), flag, shorthand, desc)
+					fset.StringSliceVarP(p.Interface().(*[]string), flag, shorthand, v.Interface().([]string), desc)
 				}
-			}
-		default:
-			if p.Type().Implements(valueType) {
-				fset.VarP(p.Interface().(pflag.Value), flag, shorthand, desc)
+			case reflect.Map:
+				if f.Type.Key().Kind() == reflect.String {
+					switch f.Type.Elem().Kind() {
+					case reflect.String:
+						fset.VarP(newStringMap(v.Interface().(map[string]string), p.Interface().(*map[string]string)), flag, shorthand, desc)
+					case reflect.Int64:
+						fset.VarP(newInt64Map(v.Interface().(map[string]int64), p.Interface().(*map[string]int64)), flag, shorthand, desc)
+					}
+				}
 			}
 		}
 
