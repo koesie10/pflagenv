@@ -88,6 +88,12 @@ func setup(fset *pflag.FlagSet, c interface{}, baseEnv, baseFlag string) error {
 			fset.StringVarP(p.Interface().(*string), flag, shorthand, v.String(), desc)
 		case reflect.Int:
 			fset.IntVarP(p.Interface().(*int), flag, shorthand, int(v.Int()), desc)
+		case reflect.Int8:
+			fset.Int8VarP(p.Interface().(*int8), flag, shorthand, int8(v.Int()), desc)
+		case reflect.Int16:
+			fset.Int16VarP(p.Interface().(*int16), flag, shorthand, int16(v.Int()), desc)
+		case reflect.Int32:
+			fset.Int32VarP(p.Interface().(*int32), flag, shorthand, int32(v.Int()), desc)
 		case reflect.Int64:
 			if f.Type == reflect.TypeOf(time.Duration(0)) {
 				fset.DurationVarP(p.Interface().(*time.Duration), flag, shorthand, v.Interface().(time.Duration), desc)
@@ -95,6 +101,16 @@ func setup(fset *pflag.FlagSet, c interface{}, baseEnv, baseFlag string) error {
 			}
 
 			fset.Int64VarP(p.Interface().(*int64), flag, shorthand, v.Int(), desc)
+		case reflect.Uint:
+			fset.UintVarP(p.Interface().(*uint), flag, shorthand, uint(v.Uint()), desc)
+		case reflect.Uint8:
+			fset.Uint8VarP(p.Interface().(*uint8), flag, shorthand, uint8(v.Int()), desc)
+		case reflect.Uint16:
+			fset.Uint16VarP(p.Interface().(*uint16), flag, shorthand, uint16(v.Int()), desc)
+		case reflect.Uint32:
+			fset.Uint32VarP(p.Interface().(*uint32), flag, shorthand, uint32(v.Int()), desc)
+		case reflect.Uint64:
+			fset.Uint64VarP(p.Interface().(*uint64), flag, shorthand, v.Uint(), desc)
 		case reflect.Float64:
 			fset.Float64VarP(p.Interface().(*float64), flag, shorthand, v.Float(), desc)
 		case reflect.Bool:
